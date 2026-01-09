@@ -31,7 +31,9 @@ export async function POST(req: NextRequest) {
 
         // Yaha User Create hu rha hai
         const user = await User.create({
-            name, email, password: hashPassword
+            name,
+            email,
+            password: hashPassword
         })
 
         // User Create huny k bad kia response jye ga wo yah sai return hu rha hai
