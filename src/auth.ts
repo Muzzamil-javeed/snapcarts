@@ -31,7 +31,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 }
             },
         }),
-
     ],
     callbacks: {
         // token k ander user ka data dalta hai
