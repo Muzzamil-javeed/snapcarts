@@ -12,22 +12,35 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 password: { label: "Password", type: "password" },
             },
             async authorize(credentials, request) {
-                await connectDb()
-                const email = credentials.email;
-                const password = credentials.password as string
-                const user = await User.findOne({ email })
-                if (!user) {
-                    throw new Error("User Do Not exit")
-                }
-                const isMatch = await bcrypt.compare(password, user.password)
-                if (!isMatch) {
-                    throw new Error("password Incorrect")
-                }
-                return {
-                    id: user._id.toString(),
-                    name: user.name,
-                    email: user.email,
-                    role: user.role
+                try {
+                    await connectDb()
+                    
+                    if (!credentials?.email || !credentials?.password) {
+                        throw new Error("Email and password are required")
+                    }
+                    
+                    const email = credentials.email as string;
+                    const password = credentials.password as string
+                    const user = await User.findOne({ email })
+                    
+                    if (!user) {
+                        throw new Error("User Do Not exit")
+                    }
+                    
+                    const isMatch = await bcrypt.compare(password, user.password)
+                    if (!isMatch) {
+                        throw new Error("password Incorrect")
+                    }
+                    
+                    return {
+                        id: user._id.toString(),
+                        name: user.name,
+                        email: user.email,
+                        role: user.role
+                    }
+                } catch (error) {
+                    console.error("Authorization error:", error)
+                    throw error
                 }
             },
         }),
@@ -45,12 +58,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         },
 
         // ab token sai session mai data  daalna hai 
-        session({ session, token }) {
+        async session({ session, token }) {
             if (session.user) {
-                session.user.id = token.id as string,
-                    session.user.name = token.name as string,
-                    session.user.email = token.name as string,
-                    session.user.role = token.role as string
+                session.user.id = token.id as string;
+                session.user.name = token.name as string;
+                session.user.email = token.email as string;
+                session.user.role = token.role as string;
             }
             return session
         }
