@@ -6,6 +6,7 @@ import Image from 'next/image'
 import googleImg from '@/assets/google-img.png'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
+import { signIn } from 'next-auth/react'
 
 type proType = {
   preStep: (s: number) => void
@@ -145,8 +146,8 @@ function RegisterForm({ preStep }: proType) {
                 type="submit"
                 disabled={!formValidation || loading}
                 className={`w-full font-semibold py-3 rounded-xl transition-all duration-200 shadow-md flex items-center justify-center gap-2 ${formValidation && !loading
-                    ? "bg-green-600 hover:bg-green-700 text-white"
-                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  ? "bg-green-600 hover:bg-green-700 text-white"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
                   }`}>
                 {loading ? (
                   <Loader2 className='w-5 h-5 animate-spin' />
@@ -165,6 +166,7 @@ function RegisterForm({ preStep }: proType) {
 
           <button
             type="button"
+            onClick={() => signIn("google")}
             className='w-full flex items-center justify-center gap-3 border border-gray-300 hover:bg-gray-50 py-3 rounded-xl text-gray-700 font-medium transition-all duration-200'>
             <Image src={googleImg} width={20} height={20} alt='Google' />
             Continue with Google
@@ -178,7 +180,7 @@ function RegisterForm({ preStep }: proType) {
           <LogIn className='w-5 h-5' />
           <span className='text-green-500'>Sign In</span>
         </p>
-      </div>
+      </div >
     </>
   )
 }

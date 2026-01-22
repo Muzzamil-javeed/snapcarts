@@ -3,6 +3,7 @@ import Credentials from "next-auth/providers/credentials"
 import connectDb from "./lib/db"
 import User from "./models/userModels"
 import bcrypt from "bcryptjs"
+import Google from "next-auth/providers/google"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     providers: [
@@ -11,27 +12,28 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 email: { label: "Username", type: "email" },
                 password: { label: "Password", type: "password" },
             },
+
             async authorize(credentials, request) {
                 try {
                     await connectDb()
-                    
+
                     if (!credentials?.email || !credentials?.password) {
                         throw new Error("Email and password are required")
                     }
-                    
+
                     const email = credentials.email as string;
                     const password = credentials.password as string
                     const user = await User.findOne({ email })
-                    
+
                     if (!user) {
                         throw new Error("User Do Not exit")
                     }
-                    
+
                     const isMatch = await bcrypt.compare(password, user.password)
                     if (!isMatch) {
                         throw new Error("password Incorrect")
                     }
-                    
+
                     return {
                         id: user._id.toString(),
                         name: user.name,
@@ -44,8 +46,30 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 }
             },
         }),
+        Google({
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET
+        })
     ],
     callbacks: {
+        async signIn({ user, account }) {
+            if (account?.provider == "google") {
+                await connectDb();
+                let dbUser = await User.findOne({ email: user.email })
+                if (!dbUser) {
+                    dbUser = await User.create({
+                        name: user.name,
+                        email: user.email,
+                        image: user.image
+                    })
+                }
+                user.id = dbUser._id.toString()
+                user.role = dbUser.role
+
+            }
+            return true
+
+        },
         // token k ander user ka data dalta hai
         async jwt({ token, user }) {
             if (user) {
