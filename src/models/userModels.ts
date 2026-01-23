@@ -5,7 +5,7 @@ interface IUser {
     name: string
     email: string
     password?: string
-    phone?: string
+    mobile?: string
     role: "user" | "admin" | "deliveryBoy"
     image?: string
 }
@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema<IUser>({
         required: true,
         unique: true
     },
-    phone: {
+    mobile: {
         type: String,
         required: false
     },
