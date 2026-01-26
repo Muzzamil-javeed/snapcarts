@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { motion } from 'motion/react'
 import { AmpersandIcon, ArrowRight, Bike, User } from 'lucide-react'
 import axios from 'axios'
+import { redirect } from 'next/navigation'
 function EditRoleMobile() {
     const [roles, setRoles] = useState([
         { id: "admin", label: "Admin", icon: AmpersandIcon },
@@ -18,7 +19,7 @@ function EditRoleMobile() {
                 role: selectRole,
                 mobile
             })
-            console.log(result.data)
+            redirect("/")
         } catch (error) {
             console.log(error)
         }
@@ -50,21 +51,20 @@ function EditRoleMobile() {
                         const Icon = role.icon
                         const isSelected = selectRole == role.id
                         return (
-                            <div>
-                                <motion.div
-                                    key={role.id}
-                                    whileTap={{ scale: 0.94 }}
-                                    onClick={() => setSelectRole(role.id)}
-                                    className={`flex flex-col items-center justify-center w-48 h-48 rounded-2xl border-2xl border-2
+                            <motion.div
+                                key={role.id}
+                                whileTap={{ scale: 0.94 }}
+                                onClick={() => setSelectRole(role.id)}
+                                className={`flex flex-col items-center justify-center w-48 h-48 rounded-2xl border-2xl border-2
                                         transition-all ${isSelected
-                                            ? "border-green-600 bg-green-100 shadow-lg"
-                                            : "border-gray-300 bg-white hover:border-green-400"
-                                        }`}
-                                >
-                                    <Icon />
-                                    <span>{role.label}</span>
-                                </motion.div>
-                            </div>
+                                        ? "border-green-600 bg-green-100 shadow-lg"
+                                        : "border-gray-300 bg-white hover:border-green-400"
+                                    }`}
+                            >
+                                <Icon />
+                                <span>{role.label}</span>
+                            </motion.div>
+
                         )
                     })
                 }
